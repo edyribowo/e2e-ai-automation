@@ -1,0 +1,74 @@
+package com.reqres.steps;
+
+import com.reqres.client.ApiClient;
+import com.reqres.config.ConfigManager;
+import com.reqres.context.TestContext;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.restassured.response.Response;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
+/** Multi-request steps that compare users across paginated responses. */
+public class PaginationSteps {
+
+    private final TestContext context;
+    private final ApiClient apiClient;
+
+    public PaginationSteps(TestContext context, ApiClient apiClient) {
+        this.context = context;
+        this.apiClient = apiClient;
+    }
+
+    @When("the first two pages of {string} are fetched")
+    public void theFirstTwoPagesAreFetched(String endpoint) {
+        context.put("page1Ids", idsForPage(endpoint, 1));
+        context.put("page2Ids", idsForPage(endpoint, 2));
+    }
+
+    @Then("there should be no duplicate user ids across the two pages")
+    @SuppressWarnings("unchecked")
+    public void thereShouldBeNoDuplicateIdsAcrossTheTwoPages() {
+        List<Integer> page1 = (List<Integer>) context.get("page1Ids");
+        List<Integer> page2 = (List<Integer>) context.get("page2Ids");
+
+        Set<Integer> intersection = new HashSet<>(page1);
+        intersection.retainAll(page2);
+        assertThat("ids shared between page 1 and page 2", intersection, is(empty()));
+
+
+        List<Integer> combined = new ArrayList<>(page1);
+        combined.addAll(page2);
+        assertThat("combined ids should be unique",
+                new HashSet<>(combined).size(), is(combined.size()));
+    }
+
+    @Then("the created user id should not appear in the first two pages of {string}")
+    public void theCreatedUserIdShouldNotAppearInTheFirstTwoPages(String endpoint) {
+        String createdId = context.getResponse().jsonPath().getString("id");
+
+        List<Integer> page1 = idsForPage(endpoint, 1);
+        List<Integer> page2 = idsForPage(endpoint, 2);
+        List<String> allIds = new ArrayList<>();
+        page1.forEach(id -> allIds.add(String.valueOf(id)));
+        page2.forEach(id -> allIds.add(String.valueOf(id)));
+
+        assertThat("created id should be absent from the listing",
+                allIds, everyItem(is(not(createdId))));
+    }
+
+    private List<Integer> idsForPage(String endpoint, int page) {
+        String url = endpoint + (endpoint.contains("?") ? "&" : "?") + "page=" + page;
+        Response response = apiClient.getWithValidKey(url, ConfigManager.validApiKey());
+        return response.jsonPath().getList("data.id");
+    }
+}
