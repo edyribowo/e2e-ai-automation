@@ -18,31 +18,26 @@ public class PayloadSteps {
 
     @Given("a user payload with name {string} and job {string}")
     public void aUserPayloadWithNameAndJob(String name, String job) {
-        context.setRawBody(false);
         context.setPayload(CreateUserRequest.of(name, job));
     }
 
     @Given("a user payload with only name {string}")
     public void aUserPayloadWithOnlyName(String name) {
-        context.setRawBody(false);
         context.setPayload(CreateUserRequest.nameOnly(name));
     }
 
     @Given("a user payload with only job {string}")
     public void aUserPayloadWithOnlyJob(String job) {
-        context.setRawBody(false);
         context.setPayload(CreateUserRequest.jobOnly(job));
     }
 
     @Given("an empty JSON payload")
     public void anEmptyJsonPayload() {
-        context.setRawBody(false);
         context.setPayload(new LinkedHashMap<String, Object>());
     }
 
     @Given("a user payload with the following fields:")
     public void aUserPayloadWithTheFollowingFields(Map<String, String> fields) {
-        context.setRawBody(false);
         context.setPayload(new LinkedHashMap<String, Object>(fields));
     }
 
@@ -51,7 +46,6 @@ public class PayloadSteps {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("name", "a".repeat(nameLength));
         body.put("job", "b".repeat(jobLength));
-        context.setRawBody(false);
         context.setPayload(body);
     }
 
@@ -60,13 +54,11 @@ public class PayloadSteps {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("name", name);
         body.put("job", job);
-        context.setRawBody(false);
         context.setPayload(body);
     }
 
     @Given("a raw request body {string}")
     public void aRawRequestBody(String rawBody) {
-        context.setRawBody(true);
         context.setPayload(rawBody);
     }
 }

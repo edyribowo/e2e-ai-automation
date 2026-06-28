@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.oneOf;
 
 /** Generic, endpoint-agnostic assertions on the captured response. */
@@ -115,6 +116,11 @@ public class ResponseSteps {
     }
 
     // ---- Body shape --------------------------------------------------------
+
+    @Then("the response body field {string} should be absent or null")
+    public void theResponseBodyFieldShouldBeAbsentOrNull(String field) {
+        assertThat("field '" + field + "' should be absent or null", json().get(field), is(nullValue()));
+    }
 
     @Then("the response body should contain the field {string}")
     public void theResponseBodyShouldContainTheField(String field) {

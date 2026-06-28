@@ -38,6 +38,7 @@ Feature: Create User
     When a POST request is sent to "/api/users"
     Then the response status code should be 201
     And the response field "name" should equal "trinity"
+    And the response body field "job" should be absent or null
     And the response field "id" should be a non-empty string
     And the response field "createdAt" should be a valid ISO 8601 timestamp
 
@@ -47,6 +48,7 @@ Feature: Create User
     When a POST request is sent to "/api/users"
     Then the response status code should be 201
     And the response field "job" should equal "oracle"
+    And the response body field "name" should be absent or null
     And the response field "id" should be a non-empty string
     And the response field "createdAt" should be a valid ISO 8601 timestamp
 

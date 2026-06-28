@@ -2,25 +2,15 @@ package com.reqres.hooks;
 
 import com.reqres.context.TestContext;
 import io.cucumber.java.After;
-import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
-import io.restassured.RestAssured;
 
-/**
- * Lifecycle hooks. Enables Rest Assured's URL-encoding safety net before every
- * scenario and attaches the final response body to the Allure report on failure.
- */
+/** Attaches the response body to the Allure report when a scenario fails. */
 public class Hooks {
 
     private final TestContext context;
 
     public Hooks(TestContext context) {
         this.context = context;
-    }
-
-    @Before
-    public void beforeScenario() {
-        RestAssured.urlEncodingEnabled = true;
     }
 
     @After

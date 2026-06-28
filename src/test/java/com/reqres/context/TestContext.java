@@ -21,9 +21,6 @@ public class TestContext {
     /** Request body: a record/Map (serialized as JSON) or a raw String. */
     private Object payload;
 
-    /** When true, {@link #payload} is a raw String sent verbatim (e.g. malformed JSON). */
-    private boolean rawBody = false;
-
     /** When false, the request is sent without a Content-Type header. */
     private boolean contentTypeEnabled = true;
 
@@ -54,14 +51,6 @@ public class TestContext {
 
     public void setPayload(Object payload) {
         this.payload = payload;
-    }
-
-    public boolean isRawBody() {
-        return rawBody;
-    }
-
-    public void setRawBody(boolean rawBody) {
-        this.rawBody = rawBody;
     }
 
     public boolean isContentTypeEnabled() {
