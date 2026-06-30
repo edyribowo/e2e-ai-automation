@@ -1,0 +1,6 @@
+com/reqres/context/TestContext.class
+com/reqres/steps/AssertionSteps.class
+com/reqres/steps/Hooks.class
+com/reqres/runner/CucumberRunnerTest.class
+com/reqres/config/ApiConfig.class
+com/reqres/steps/RequestSteps.class

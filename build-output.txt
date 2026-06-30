@@ -1,0 +1,835 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldBase has been called by com.google.inject.internal.aop.HiddenClassDefiner (file:/opt/homebrew/Cellar/maven/3.9.11/libexec/lib/guice-5.1.0-classes.jar)
+WARNING: Please consider reporting this to the maintainers of class com.google.inject.internal.aop.HiddenClassDefiner
+WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.reqres:api-automation >----------------------
+[INFO] Building api-automation 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ api-automation ---
+[INFO] Deleting /Users/edy/.jenkins/workspace/API Automation Creation/target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ api-automation ---
+[INFO] skip non existing resourceDirectory /Users/edy/.jenkins/workspace/API Automation Creation/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ api-automation ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ api-automation ---
+[INFO] Copying 5 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ api-automation ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 6 source files with javac [debug target 21] to target/test-classes
+[WARNING] location of system modules is not set in conjunction with -source 21
+  not setting the location of system modules may lead to class files that cannot run on JDK 21
+    --release 21 is recommended instead of -source 21 -target 21 because it sets the location of system modules automatically
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ api-automation ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+Jun 30, 2026 1:31:23 PM io.cucumber.junit.platform.engine.DiscoverySelectorResolver warnWhenCucumberFeaturesPropertyIsUsed
+WARNING: Discovering tests using the cucumber.features property. Other discovery selectors are ignored!
+
+This is a work around for the limited JUnit 5 support in Maven and Gradle. Please request/upvote/sponsor/ect better support for JUnit 5 discovery selectors. For details see: https://github.com/cucumber/cucumber-jvm/pull/2498
+
+If you are using the JUnit 5 Suite Engine, Platform Launcher API or Console Launcher you should not use this property. Please consult the JUnit 5 documentation on test selection.
+[INFO] Running com.reqres.runner.CucumberRunnerTest
+[INFO] Running io.cucumber.junit.platform.engine.CucumberTestEngine
+
+@positive @smoke
+Scenario: TC-AUTH-001 Request with valid API key is accepted          # features/auth.feature:5
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  Given the request uses a valid API key                              # com.reqres.steps.RequestSteps.useValidApiKey()
+  When a GET request is sent to "/api/users"                          # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                         # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body should contain fields "page", "data", "total" # com.reqres.steps.AssertionSteps.bodyContainsThreeFields(java.lang.String,java.lang.String,java.lang.String)
+
+@negative @auth
+Scenario: TC-AUTH-002 Request without API key header is rejected # features/auth.feature:12
+  Given the request has no API key header                        # com.reqres.steps.RequestSteps.useNoApiKey()
+Request method:	GET
+Request URI:	https://reqres.in/api/users
+Proxy:			<none>
+Request params:	<none>
+Query params:	<none>
+Form params:	<none>
+Path params:	<none>
+Headers:		Accept=*/*
+				Content-Type=application/json
+Cookies:		<none>
+Multiparts:		<none>
+Body:			<none>
+  When a GET request is sent to "/api/users"                     # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 401                    # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body should contain an auth error             # com.reqres.steps.AssertionSteps.bodyContainsAuthError()
+
+@negative @auth
+Scenario: TC-AUTH-003 Request with invalid API key is rejected # features/auth.feature:19
+  Given the request uses an invalid API key "invalid-key-xyz"  # com.reqres.steps.RequestSteps.useInvalidApiKey(java.lang.String)
+Request method:	GET
+Request URI:	https://reqres.in/api/users
+Proxy:			<none>
+Request params:	<none>
+Query params:	<none>
+Form params:	<none>
+Path params:	<none>
+Headers:		x-api-key=invalid-key-xyz
+				Accept=*/*
+				Content-Type=application/json
+Cookies:		<none>
+Multiparts:		<none>
+Body:			<none>
+  When a GET request is sent to "/api/users"                   # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 401 or 403           # com.reqres.steps.AssertionSteps.statusCode401or403()
+
+@negative @auth
+Scenario: TC-AUTH-004 Request with empty string API key is rejected # features/auth.feature:25
+  Given the request uses an invalid API key ""                      # com.reqres.steps.RequestSteps.useInvalidApiKey(java.lang.String)
+Request method:	GET
+Request URI:	https://reqres.in/api/users
+Proxy:			<none>
+Request params:	<none>
+Query params:	<none>
+Form params:	<none>
+Path params:	<none>
+Headers:		x-api-key=
+				Accept=*/*
+				Content-Type=application/json
+Cookies:		<none>
+Multiparts:		<none>
+Body:			<none>
+  When a GET request is sent to "/api/users"                        # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 401 or 403                # com.reqres.steps.AssertionSteps.statusCode401or403()
+
+@create-user @positive @smoke
+Scenario: TC-CRU-001 Create user with both name and job fields           # features/create_user.feature:5
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with body:                 # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201                            # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body field "name" should equal "morpheus"             # com.reqres.steps.AssertionSteps.fieldEqualsString(java.lang.String,java.lang.String)
+  And the response body field "job" should equal "leader"                # com.reqres.steps.AssertionSteps.fieldEqualsString(java.lang.String,java.lang.String)
+  And the response body should have a non-empty string field "id"        # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+  And the response body should have a non-empty string field "createdAt" # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+
+@create-user @positive
+Scenario: TC-CRU-002 Response id field is a non-empty string      # features/create_user.feature:17
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with body:          # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201                     # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body should have a non-empty string field "id" # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+
+@create-user @positive
+Scenario: TC-CRU-003 Response createdAt is a valid ISO 8601 timestamp          # features/create_user.feature:26
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with body:                       # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201                                  # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body field "createdAt" should be a valid ISO 8601 timestamp # com.reqres.steps.AssertionSteps.fieldIsIso8601(java.lang.String)
+
+@create-user @positive
+Scenario: TC-CRU-004 Create user with name only                          # features/create_user.feature:35
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with body:                 # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201                            # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body field "name" should equal "trinity"              # com.reqres.steps.AssertionSteps.fieldEqualsString(java.lang.String,java.lang.String)
+  And the response body should have a non-empty string field "id"        # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+  And the response body should have a non-empty string field "createdAt" # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+
+@create-user @positive
+Scenario: TC-CRU-005 Create user with job only                           # features/create_user.feature:46
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with body:                 # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201                            # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body field "job" should equal "oracle"                # com.reqres.steps.AssertionSteps.fieldEqualsString(java.lang.String,java.lang.String)
+  And the response body should have a non-empty string field "id"        # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+  And the response body should have a non-empty string field "createdAt" # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+
+@create-user @edge
+Scenario: TC-CRU-006 Create user with empty JSON body                    # features/create_user.feature:57
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with body:                 # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201                            # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body should have a non-empty string field "id"        # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+  And the response body should have a non-empty string field "createdAt" # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+
+@create-user @edge
+Scenario: TC-CRU-007 Extra fields are echoed back         # features/create_user.feature:67
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with body:  # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201             # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body field "name" should equal "neo"   # com.reqres.steps.AssertionSteps.fieldEqualsString(java.lang.String,java.lang.String)
+  And the response body field "job" should equal "chosen" # com.reqres.steps.AssertionSteps.fieldEqualsString(java.lang.String,java.lang.String)
+
+@create-user @edge
+Scenario: TC-CRU-008 Create user with special characters in name and job # features/create_user.feature:77
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with body:                 # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201                            # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body field "name" should equal "Ñoño & <b>test</b>"   # com.reqres.steps.AssertionSteps.fieldEqualsString(java.lang.String,java.lang.String)
+  And the response body field "job" should equal "dev/ops+lead"          # com.reqres.steps.AssertionSteps.fieldEqualsString(java.lang.String,java.lang.String)
+
+@create-user @edge
+Scenario: TC-CRU-009 Create user with very long string values                    # features/create_user.feature:87
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with a 1000-character name and job # com.reqres.steps.RequestSteps.sendPostLongStrings(java.lang.String)
+  Then the response status code should be 201                                    # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body should have a non-empty string field "id"                # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+  And the response body should have a non-empty string field "createdAt"         # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+
+@create-user @negative
+Scenario: TC-CRU-010 Create user — missing x-api-key header # features/create_user.feature:94
+  Given the request has no API key header                   # com.reqres.steps.RequestSteps.useNoApiKey()
+Request method:	POST
+Request URI:	https://reqres.in/api/users
+Proxy:			<none>
+Request params:	<none>
+Query params:	<none>
+Form params:	<none>
+Path params:	<none>
+Headers:		Accept=*/*
+				Content-Type=application/json
+Cookies:		<none>
+Multiparts:		<none>
+Body:
+{
+    "name": "morpheus",
+    "job": "leader"
+}
+  When a POST request is sent to "/api/users" with body:    # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 401               # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body should contain an auth error        # com.reqres.steps.AssertionSteps.bodyContainsAuthError()
+
+@create-user @negative
+Scenario: TC-CRU-011 Create user — invalid API key        # features/create_user.feature:104
+  Given the request uses an invalid API key "bad-key-000" # com.reqres.steps.RequestSteps.useInvalidApiKey(java.lang.String)
+Request method:	POST
+Request URI:	https://reqres.in/api/users
+Proxy:			<none>
+Request params:	<none>
+Query params:	<none>
+Form params:	<none>
+Path params:	<none>
+Headers:		x-api-key=bad-key-000
+				Accept=*/*
+				Content-Type=application/json
+Cookies:		<none>
+Multiparts:		<none>
+Body:
+{
+    "name": "morpheus",
+    "job": "leader"
+}
+  When a POST request is sent to "/api/users" with body:  # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 401 or 403      # com.reqres.steps.AssertionSteps.statusCode401or403()
+
+@create-user @edge
+Scenario: TC-CRU-012 Create user with numeric values for name and job    # features/create_user.feature:113
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with body:                 # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201                            # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body should have a non-empty string field "id"        # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+  And the response body should have a non-empty string field "createdAt" # com.reqres.steps.AssertionSteps.nonEmptyStringField(java.lang.String)
+
+@create-user @positive
+Scenario: TC-CRU-013 Create user — response Content-Type is application/json # features/create_user.feature:123
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a POST request is sent to "/api/users" with body:                     # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201                                # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response Content-Type header should contain "application/json"     # com.reqres.steps.AssertionSteps.contentTypeContains(java.lang.String)
+
+@cross-cutting @positive
+Scenario: TC-X-001 POST-created user does not appear in GET list (mock behavior) # features/cross_cutting.feature:5
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  Given the request uses a valid API key                                         # com.reqres.steps.RequestSteps.useValidApiKey()
+  And the request content type is "application/json"                             # com.reqres.steps.RequestSteps.setContentType(java.lang.String)
+  When a POST request is sent to "/api/users" with body:                         # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should be 201                                    # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And I store the created user id from the response                              # com.reqres.steps.AssertionSteps.storeCreatedUserId()
+  Given the request uses a valid API key                                         # com.reqres.steps.RequestSteps.useValidApiKey()
+  When a GET request is sent to "/api/users?page=1"                              # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                                    # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the stored user id should not appear in the "data" array                   # com.reqres.steps.AssertionSteps.storedIdNotInArray(java.lang.String)
+  When a GET request is sent to "/api/users?page=2"                              # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the stored user id should not appear in the "data" array                  # com.reqres.steps.AssertionSteps.storedIdNotInArray(java.lang.String)
+
+@cross-cutting @positive
+Scenario: TC-X-002 API responds within acceptable latency     # features/cross_cutting.feature:22
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  Given the request uses a valid API key                      # com.reqres.steps.RequestSteps.useValidApiKey()
+  When a GET request is sent to "/api/users"                  # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                 # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response time should be less than 3000 milliseconds # com.reqres.steps.AssertionSteps.responseFasterThan(int)
+
+@cross-cutting @edge
+Scenario: TC-X-003 Unsupported HTTP method returns appropriate error # features/cross_cutting.feature:29
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  Given the request uses a valid API key                             # com.reqres.steps.RequestSteps.useValidApiKey()
+  When a DELETE request is sent to "/api/users"                      # com.reqres.steps.RequestSteps.sendDelete(java.lang.String)
+  Then the response status code should be 404 or 405                 # com.reqres.steps.AssertionSteps.statusCode404or405()
+
+@cross-cutting @edge
+Scenario: TC-X-004 Request with no Content-Type header on POST # features/cross_cutting.feature:35
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  Given the request uses a valid API key                       # com.reqres.steps.RequestSteps.useValidApiKey()
+  And the request has no Content-Type header                   # com.reqres.steps.RequestSteps.noContentTypeHeader()
+  When a POST request is sent to "/api/users" with body:       # com.reqres.steps.RequestSteps.sendPost(java.lang.String,java.lang.String)
+  Then the response status code should not be 500              # com.reqres.steps.AssertionSteps.statusCodeNot500()
+
+@cross-cutting @edge
+Scenario: TC-X-005 Malformed JSON body on POST is handled gracefully           # features/cross_cutting.feature:45
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  Given the request uses a valid API key                                       # com.reqres.steps.RequestSteps.useValidApiKey()
+  And the request content type is "application/json"                           # com.reqres.steps.RequestSteps.setContentType(java.lang.String)
+  When a POST request is sent to "/api/users" with raw body "{name: morpheus}" # com.reqres.steps.RequestSteps.sendPostRawBody(java.lang.String,java.lang.String)
+  Then the response status code should not be 500                              # com.reqres.steps.AssertionSteps.statusCodeNot500()
+
+@list-users @positive @smoke
+Scenario: TC-LST-001 Retrieve default first page with no query params    # features/list_users.feature:5
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users"                             # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                            # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body field "page" should equal 1                      # com.reqres.steps.AssertionSteps.fieldEqualsInt(java.lang.String,int)
+  And the response body field "per_page" should equal 6                  # com.reqres.steps.AssertionSteps.fieldEqualsInt(java.lang.String,int)
+  And the response body "data" array size should be at most 6            # com.reqres.steps.AssertionSteps.arraySizeAtMost(java.lang.String,int)
+  And the response body "total" field should be a positive integer       # com.reqres.steps.AssertionSteps.fieldIsPositiveInt(java.lang.String)
+  And the response body "total_pages" field should be a positive integer # com.reqres.steps.AssertionSteps.fieldIsPositiveInt(java.lang.String)
+
+@list-users @positive
+Scenario: TC-LST-002 Retrieve page 2 explicitly          # features/list_users.feature:15
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=2"      # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200            # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body field "page" should equal 2      # com.reqres.steps.AssertionSteps.fieldEqualsInt(java.lang.String,int)
+  And the response body "data" array should be non-empty # com.reqres.steps.AssertionSteps.arrayNonEmpty(java.lang.String)
+
+@list-users @positive
+Scenario: TC-LST-003 Retrieve page 1 explicitly     # features/list_users.feature:22
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=1" # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200       # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body field "page" should equal 1 # com.reqres.steps.AssertionSteps.fieldEqualsInt(java.lang.String,int)
+
+@list-users @positive
+Scenario: TC-LST-004 Verify response body schema on list                                                    # features/list_users.feature:28
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=1"                                                         # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                                                               # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body should contain fields "page", "per_page", "total", "total_pages", "data", "support" # com.reqres.steps.AssertionSteps.bodyContainsSixFields(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+  And the response body "support" object should contain fields "url", "text"                                # com.reqres.steps.AssertionSteps.nestedObjectHasFields(java.lang.String,java.lang.String,java.lang.String)
+
+@list-users @positive
+Scenario: TC-LST-005 Verify each user object schema in data array                               # features/list_users.feature:35
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=1"                                             # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                                                   # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And each user in "data" should have fields "id", "email", "first_name", "last_name", "avatar" # com.reqres.steps.AssertionSteps.eachUserHasFields(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+
+@list-users @positive
+Scenario: TC-LST-006 Custom per_page parameter returns correct count # features/list_users.feature:41
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?per_page=3"              # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                        # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body field "per_page" should equal 3              # com.reqres.steps.AssertionSteps.fieldEqualsInt(java.lang.String,int)
+  And the response body "data" array size should be at most 3        # com.reqres.steps.AssertionSteps.arraySizeAtMost(java.lang.String,int)
+
+@list-users @positive
+Scenario: TC-LST-007 total_pages is consistent with total and per_page # features/list_users.feature:48
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users"                           # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                          # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And "total_pages" should equal ceil of "total" divided by "per_page" # com.reqres.steps.AssertionSteps.totalPagesConsistency(java.lang.String,java.lang.String,java.lang.String)
+
+@list-users @edge
+Scenario: TC-LST-008 Page beyond last page returns empty data or handled gracefully              # features/list_users.feature:54
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=9999"                                           # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should not be 500                                                # com.reqres.steps.AssertionSteps.statusCodeNot500()
+  And if status is 200 the "data" array should be empty or the response should have a 4xx status # com.reqres.steps.AssertionSteps.emptyDataOrNot500(java.lang.String)
+
+@list-users @edge
+Scenario: TC-LST-009 Page number 0 is handled gracefully # features/list_users.feature:60
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=0"      # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should not be 500        # com.reqres.steps.AssertionSteps.statusCodeNot500()
+
+@list-users @edge
+Scenario: TC-LST-010 Negative page number is handled gracefully # features/list_users.feature:65
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=-1"            # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should not be 500               # com.reqres.steps.AssertionSteps.statusCodeNot500()
+
+@list-users @edge
+Scenario: TC-LST-011 Non-integer page value is handled gracefully # features/list_users.feature:70
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=abc"             # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should not be 500                 # com.reqres.steps.AssertionSteps.statusCodeNot500()
+
+@list-users @edge
+Scenario: TC-LST-012 per_page=0 is handled gracefully   # features/list_users.feature:75
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?per_page=0" # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should not be 500       # com.reqres.steps.AssertionSteps.statusCodeNot500()
+
+@list-users @negative
+Scenario: TC-LST-013 List users — missing x-api-key header # features/list_users.feature:80
+  Given the request has no API key header                  # com.reqres.steps.RequestSteps.useNoApiKey()
+Request method:	GET
+Request URI:	https://reqres.in/api/users
+Proxy:			<none>
+Request params:	<none>
+Query params:	<none>
+Form params:	<none>
+Path params:	<none>
+Headers:		Accept=*/*
+				Content-Type=application/json
+Cookies:		<none>
+Multiparts:		<none>
+Body:			<none>
+  When a GET request is sent to "/api/users"               # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 401              # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response body should contain an auth error       # com.reqres.steps.AssertionSteps.bodyContainsAuthError()
+
+@list-users @negative
+Scenario: TC-LST-014 List users — invalid API key       # features/list_users.feature:87
+  Given the request uses an invalid API key "wrong-key" # com.reqres.steps.RequestSteps.useInvalidApiKey(java.lang.String)
+Request method:	GET
+Request URI:	https://reqres.in/api/users
+Proxy:			<none>
+Request params:	<none>
+Query params:	<none>
+Form params:	<none>
+Path params:	<none>
+Headers:		x-api-key=wrong-key
+				Accept=*/*
+				Content-Type=application/json
+Cookies:		<none>
+Multiparts:		<none>
+Body:			<none>
+  When a GET request is sent to "/api/users"            # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 401 or 403    # com.reqres.steps.AssertionSteps.statusCode401or403()
+
+@list-users @positive
+Scenario: TC-LST-015 data array user emails follow valid email format # features/list_users.feature:93
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=1"                   # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                         # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And each user's "email" field should match a valid email format     # com.reqres.steps.AssertionSteps.eachUserEmailValid(java.lang.String)
+
+@list-users @positive
+Scenario: TC-LST-016 avatar URLs in data are valid HTTPS URLs # features/list_users.feature:99
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=1"           # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                 # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And each user's "avatar" field should start with "https://" # com.reqres.steps.AssertionSteps.eachUserFieldStartsWith(java.lang.String,java.lang.String)
+
+@list-users @positive
+Scenario: TC-LST-017 Response Content-Type is application/json           # features/list_users.feature:105
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users"                             # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                            # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the response Content-Type header should contain "application/json" # com.reqres.steps.AssertionSteps.contentTypeContains(java.lang.String)
+
+@list-users @positive
+Scenario: TC-LST-018 Paginated pages together cover all users without overlap # features/list_users.feature:111
+      java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+  When a GET request is sent to "/api/users?page=1"                           # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                                 # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And I store the user IDs from "data"                                        # com.reqres.steps.AssertionSteps.storeUserIds(java.lang.String)
+  When a GET request is sent to "/api/users?page=2"                           # com.reqres.steps.RequestSteps.sendGet(java.lang.String)
+  Then the response status code should be 200                                 # com.reqres.steps.AssertionSteps.statusCodeEquals(int)
+  And the user IDs from "data" should not overlap with stored IDs             # com.reqres.steps.AssertionSteps.idsNoOverlap(java.lang.String)
+[ERROR] Tests run: 40, Failures: 0, Errors: 33, Skipped: 0, Time elapsed: 4.280 s <<< FAILURE! -- in io.cucumber.junit.platform.engine.CucumberTestEngine
+[ERROR] Authentication (Global).TC-AUTH-001 Request with valid API key is accepted -- Time elapsed: 0.352 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-001 Create user with both name and job fields -- Time elapsed: 0.011 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-002 Response id field is a non-empty string -- Time elapsed: 0.009 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-003 Response createdAt is a valid ISO 8601 timestamp -- Time elapsed: 0.007 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-004 Create user with name only -- Time elapsed: 0.012 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-005 Create user with job only -- Time elapsed: 0.006 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-006 Create user with empty JSON body -- Time elapsed: 0.006 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-007 Extra fields are echoed back -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-008 Create user with special characters in name and job -- Time elapsed: 0.004 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-009 Create user with very long string values -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-012 Create user with numeric values for name and job -- Time elapsed: 0.011 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Create User (POST /api/users).TC-CRU-013 Create user — response Content-Type is application/json -- Time elapsed: 0.009 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Cross-Cutting Concerns.TC-X-001 POST-created user does not appear in GET list (mock behavior) -- Time elapsed: 0.011 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Cross-Cutting Concerns.TC-X-002 API responds within acceptable latency -- Time elapsed: 0.006 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Cross-Cutting Concerns.TC-X-003 Unsupported HTTP method returns appropriate error -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Cross-Cutting Concerns.TC-X-004 Request with no Content-Type header on POST -- Time elapsed: 0.006 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] Cross-Cutting Concerns.TC-X-005 Malformed JSON body on POST is handled gracefully -- Time elapsed: 0.006 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-001 Retrieve default first page with no query params -- Time elapsed: 0.009 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-002 Retrieve page 2 explicitly -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-003 Retrieve page 1 explicitly -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-004 Verify response body schema on list -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-005 Verify each user object schema in data array -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-006 Custom per_page parameter returns correct count -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-007 total_pages is consistent with total and per_page -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-008 Page beyond last page returns empty data or handled gracefully -- Time elapsed: 0.004 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-009 Page number 0 is handled gracefully -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-010 Negative page number is handled gracefully -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-011 Non-integer page value is handled gracefully -- Time elapsed: 0.008 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-012 per_page=0 is handled gracefully -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-015 data array user emails follow valid email format -- Time elapsed: 0.013 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-016 avatar URLs in data are valid HTTPS URLs -- Time elapsed: 0.009 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-017 Response Content-Type is application/json -- Time elapsed: 0.006 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[ERROR] List Users Paginated (GET /api/users).TC-LST-018 Paginated pages together cover all users without overlap -- Time elapsed: 0.006 s <<< ERROR!
+java.lang.IllegalStateException: REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+	at com.reqres.config.ApiConfig.getApiKey(ApiConfig.java:21)
+	at com.reqres.config.ApiConfig.baseSpec(ApiConfig.java:34)
+	at com.reqres.steps.Hooks.setupAuthenticatedSpec(Hooks.java:26)
+
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.851 s -- in com.reqres.runner.CucumberRunnerTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Errors: 
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[ERROR]   REQRES_API_KEY is not configured. Obtain a valid key from https://app.reqres.in/api-keys and set it as the REQRES_API_KEY environment variable or -DREQRES_API_KEY=<key> system property.
+[INFO] 
+[ERROR] Tests run: 40, Failures: 0, Errors: 33, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.389 s
+[INFO] Finished at: 2026-06-30T13:31:28+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.2.5:test (default-test) on project api-automation: 
+[ERROR] 
+[ERROR] Please refer to /Users/edy/.jenkins/workspace/API Automation Creation/target/surefire-reports for the individual test results.
+[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

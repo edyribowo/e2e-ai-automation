@@ -1,0 +1,6 @@
+/Users/edy/.jenkins/workspace/API Automation Creation/src/test/java/com/reqres/config/ApiConfig.java
+/Users/edy/.jenkins/workspace/API Automation Creation/src/test/java/com/reqres/context/TestContext.java
+/Users/edy/.jenkins/workspace/API Automation Creation/src/test/java/com/reqres/runner/CucumberRunnerTest.java
+/Users/edy/.jenkins/workspace/API Automation Creation/src/test/java/com/reqres/steps/AssertionSteps.java
+/Users/edy/.jenkins/workspace/API Automation Creation/src/test/java/com/reqres/steps/Hooks.java
+/Users/edy/.jenkins/workspace/API Automation Creation/src/test/java/com/reqres/steps/RequestSteps.java
